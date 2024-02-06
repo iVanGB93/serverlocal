@@ -1,0 +1,91 @@
+{% extends "sorteo/baseSorteo.html" %}
+{% load static %}
+{% block title %} - Sorteo{% endblock %}
+{% block contenido %}
+<div class="fondo"></div>
+<div class="contenedor" style="background-image: url({% static 'sorteo/images/middlebackgroundpaper.jpg' %})"> 
+    <div class="bigFrame">
+        <div class="mainframe stopped">
+            <h1 class="titulo">Participantes</h1>
+            <div class="participants-frame">  
+                <ul class="participants-list">
+                </ul>         
+            </div>            
+        </div>    
+        <div class="spinner">
+            <img class="rounded-circle" src="{% static 'sorteo/images/coin.gif' %}" alt="coins"/>
+        </div>
+        <div class="result stopped">
+            <h1 class="letra" id="resultado">Sorteo Finalizado, suerte el siguiente mes!!!{{ text }}</h1>
+        </div>    
+    </div>
+</div>
+{{ activo|json_script:"activo" }}
+{{ finalizado|json_script:"finalizado" }}
+<script src="{% static 'web/js/reconnecting-websocket.js' %}"></script>
+<script>
+    const activos = [];
+    const eliminados = [];
+    var activo = JSON.parse(document.getElementById('activo').textContent);
+    var finalizado = JSON.parse(document.getElementById('finalizado').textContent);
+    var socketSorteo = new ReconnectingWebSocket('wss://qbared.com/ws/sorteo/running/');
+    socketSorteo.onopen = function(e) {
+        console.log('socketSorteo conectado');
+        if (activo === false) {
+            socketSorteo.send(JSON.stringify({
+                'accion': 'participantes',
+                'data': {
+                    'individual': true
+                }
+            }))
+        };
+        if (finalizado === true) {
+            document.querySelector('.spinner').classList.add("stopped");
+            document.querySelector('.mainframe').classList.remove("stopped");
+            document.querySelector('.mainframe').classList.add("playing");
+            document.querySelector('.result').classList.remove("stopped");
+            document.querySelector('.result').classList.add("playing");
+        }   
+    }
+    socketSorteo.onmessage = function(e){
+        var data = JSON.parse(e.data);
+        if (data['mensaje'] === 'participantes') {
+            var list = document.querySelector('.participants-list');
+            while (list.firstChild) {
+                list.removeChild(list.firstChild);
+            }
+            document.querySelector('.spinner').classList.add("stopped");
+            document.querySelector('.mainframe').classList.remove("playing");
+            document.querySelector('.result').classList.remove("playing");
+            var participants = data['participantes']
+            var participants = participants.map(participants => {                   
+                var parListTag = document.createElement('li');
+                if (participants['eliminado']) {
+                    var delTag = document.createElement('del');
+                    delTag.textContent = participants['usuario'] + " por " + participants['servicio'] + " (" + participants['code'] + ")";
+                    parListTag.appendChild(delTag);
+                    parListTag.className = "dead";
+                    parListTag.id = participants.id
+                    eliminados.push(participants.id);
+                } else {
+                    var pTag = document.createElement('p');
+                    pTag.textContent = participants['usuario'] + " por " + participants['servicio'] + " (" + participants['code'] + ")";
+                    parListTag.appendChild(pTag);
+                    parListTag.className = "alive";
+                    parListTag.id = participants.id
+                    activos.push(participants.id);
+                }                        
+                document.querySelector('.participants-list').appendChild(parListTag);
+            })
+        } else {
+            var resultado = document.querySelector('#resultado');
+            resultado.innerText = data.mensaje;
+            document.querySelector('.mainframe').classList.add("playing");
+            document.querySelector('.result').classList.add("playing");
+        }
+    }
+    socketSorteo.onclose = function(e) {
+        console.error('socketSorteo cerrado');
+    }
+</script>
+{% endblock contenido %}

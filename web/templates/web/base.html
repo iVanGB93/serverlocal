@@ -1,0 +1,176 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">   
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{% static 'web/images/logo.svg' %}"/>
+    <meta name="description" content="Sitio oficial de Qbared, comunidad inalámbrica de Centro Habana, Cuba.">
+    <meta name="author" content="iVan">
+    <link href="{% static 'web/bootstrap5.0/css/bootstrap.min.css' %}" rel="stylesheet" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'web/fontawesome-free-5.15.4-web/css/all.css' %}">
+    <link rel="stylesheet" href="{% static 'web/css/sweetalert2.min.css' %}">
+    <link rel="stylesheet" href="{% static 'web/css/all.css' %}">
+    {% block head %}
+    {% endblock %}
+    <title>QbaRed{% block title %}{% endblock %}</title>
+  </head>
+  <body>
+    {% block header %}
+    {% endblock %}
+    <main>
+    {% block content %}
+    {% endblock content %}
+    {% block footer %}
+    {% endblock %}
+      <div id="caja_notificaciones" class="notificaciones" style="display: none;">
+          <div class="notificaciones_header">
+            <h5>Notificaciones</h5>
+          </div>
+          <div class="spinner-grow spinner_notificaciones" aria-hidden="true" id="spinner_notificaciones"></div>          
+          <div class="lista_notificaciones">
+            <ul id="lista_notificaciones" style="list-style:none;">
+            </ul>
+          </div>
+          <button id="cerrar_notificaciones" class="notificaciones_boton">Cerrar</button>
+      </div>    
+    </main>
+    <script src="{% static 'web/bootstrap5.0/js/popper.min.js' %}"></script>
+    <script src="{% static 'web/bootstrap5.0/js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'web/js/reconnecting-websocket.js' %}"></script>
+    <script src="{% static 'web/js/sweetalert2.min.js' %}"></script>
+    {% block script %}
+    {% endblock %}
+    {% if user.is_authenticated %}
+    {{ user.username|json_script:"usuario" }}    
+    <script>
+      var usuario = JSON.parse(document.getElementById('usuario').textContent);
+      var socket = new ReconnectingWebSocket('wss://qbared.com/ws/web/');
+      if (usuario !== 'anonymous') {
+        const boton = document.getElementById('boton_notificaciones')
+        const notificaciones = document.getElementById('caja_notificaciones')
+        const cerrar_notificaciones = document.getElementById('caja_notificaciones')
+        const notificaciones_nuevas = document.getElementById('notificaciones_nuevas')
+        boton.onclick = function(e) {
+          if (notificaciones.style.display === 'none') {
+            notificaciones.style.display = 'inline'
+            socket.send(JSON.stringify({
+              'accion': 'notificaciones',
+              'data': {
+                'usuario': usuario
+              }
+            }))
+          } else {
+            notificaciones.style.display = 'none'
+            socket.send(JSON.stringify({
+              'accion': 'notificaciones_nuevas',
+              'data': {
+                'usuario': usuario
+              }
+            }))
+          }
+        }        
+        cerrar_notificaciones.onclick = function(e) {
+          notificaciones.style.display = 'none';
+          socket.send(JSON.stringify({
+            'accion': 'notificaciones_nuevas',
+            'data': {
+              'usuario': usuario
+            }
+          }))
+        }
+      }
+      socket.onopen = function(e) {
+        console.log('socket conectado');       
+        socket.send(JSON.stringify({
+            'accion': 'saludo',
+            'data': {
+              'identidad': usuario
+            }
+        }));
+        socket.send(JSON.stringify({
+            'accion': 'notificaciones_nuevas',
+            'data': {
+              'usuario': usuario
+            }
+        }));        
+      };
+      socket.onmessage = function(e){
+        var data = JSON.parse(e.data);
+        if (data['accion'] === 'notificaciones') {                   
+          if (data['nuevas'] > 0) {
+            notificaciones_nuevas.style.display = 'block'
+            notificaciones_nuevas.textContent = data['nuevas'];
+          } else {
+            notificaciones_nuevas.style.display = 'none'
+          };
+          var lista_notificaciones = document.querySelector('.lista_notificaciones');
+          while (lista_notificaciones.firstChild) {
+            lista_notificaciones.removeChild(lista_notificaciones.firstChild);
+          };
+          document.getElementById('spinner_notificaciones').style.display = 'none';
+          if (data['notificaciones'].length === 0) {
+            var notListTag = document.createElement('li');
+            notListTag.className = "text-center";
+            notListTag.textContent = "Nada por aquí, comienza a usar QbaRed!!!"
+            document.querySelector('.lista_notificaciones').appendChild(notListTag);
+          } else {            
+            var notificaciones = data['notificaciones']
+            var notificaciones = notificaciones.map(notificaciones => {
+              var notListTag = document.createElement('li');
+              var row1 = document.createElement('div');
+              row1.className = "row";
+              var row1tipo = document.createElement('p');
+              row1tipo.textContent = notificaciones['tipo'];
+              row1tipo.className = "col-3";
+              var row1contenido = document.createElement('p');
+              row1contenido.textContent = notificaciones['contenido']
+              row1contenido.className = "col-9 fs-6 text-start";
+              row1.appendChild(row1tipo);
+              row1.appendChild(row1contenido);
+              notListTag.appendChild(row1);
+              var row2 = document.createElement('div');
+              row2.className = "row";
+              var row2fecha = document.createElement('p');
+              fechallegada = new Date(notificaciones['fecha'])
+              row2fecha.textContent = " Hora: " + fechallegada.getUTCHours() + ":" + fechallegada.getUTCMinutes() + " - Día: "  + fechallegada.getUTCDay() + "/" + fechallegada.getUTCMonth() + "/" + fechallegada.getUTCFullYear();
+              row2fecha.className = "col-9 fs-10 text-muted text-end";
+              var row2vista = document.createElement('p');
+              var spanvista = document.createElement('span');
+              if (notificaciones['vista']) {
+                spanvista.textContent = "Vista";
+                spanvista.className = "badge rounded-pill bg-secondary";
+              } else {
+                spanvista.textContent = "Nueva";
+                spanvista.className = "badge rounded-pill bg-success";
+              };
+              row2vista.appendChild(spanvista)
+              row2vista.className = "col-3"
+              row2.appendChild(row2fecha);
+              row2.appendChild(row2vista);
+              notListTag.appendChild(row2)
+              notListTag.id = notificaciones['id']
+              document.querySelector('.lista_notificaciones').appendChild(notListTag);
+            });
+          }
+        } else if (data['accion'] === 'nuevas') {
+          if (data['nuevas'] > 0) {
+            notificaciones_nuevas.style.display = 'inline'
+            notificaciones_nuevas.textContent = data['nuevas'];
+          } else {
+            notificaciones_nuevas.style.display = 'none'
+          }
+        } else {
+          console.log(data)
+        }
+      };
+      socket.onclose = function(e) {
+        console.error('socket cerrado');
+      };      
+    </script>
+    {% else %}
+    {{ "anonymous"|json_script:"usuario" }}
+    {% endif %}
+  </body>
+</html>

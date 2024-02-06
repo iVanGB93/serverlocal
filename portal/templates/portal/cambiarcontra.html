@@ -1,0 +1,38 @@
+{% extends "portal/basePortal.html" %}
+{% load static %}
+{% block contenido %}
+<div class="col-10 col-md-6 m-auto my-5 p-2 text-center caja" style="max-width: 450px; background: #fff;">   
+    <div class="cardHeader titulo">
+        <h3 class="titulo m-3 p-3">Cambiar contraseña:</h3>            
+    </div> 
+    <hr class="dropdown-divider" />
+    <div class="card-body m-3">                
+        <form id="myform" action="{% url 'portal:contra' %}"  method="post">            
+            {% csrf_token %}
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="floatingActual" required name="actual" placeholder="mi contraseña actual...">
+                <label for="floatingActual">Contraseña actual:</label>
+            </div>                   
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="floatingNueva" required name="nueva" placeholder="mi contraseña nueva...">
+                <label for="floatingNueva">Contraseña nueva:</label>
+            </div>                   
+            <div class="form-floating mb-3">
+                <input type="password" class="form-control" id="floatingConfirme" required name="confirme" placeholder="mi contraseña nueva otra vez...">
+                <label for="floatingConfirme">Confirme contraseña nueva:</label>
+            </div>                   
+            <button id="boton" class="btn btn-outline-primary" type="submit">
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="spinner" style='display: none;'></span>
+                Cambiar
+            </button>
+        </form>      
+    </div>
+</div>
+<script>
+    const myform = document.getElementById("myform");
+    myform.addEventListener("submit", (e) => {       
+        document.getElementById('spinner').style.display = 'inline-block';
+        document.getElementById('boton').disabled=true;
+    });
+</script>
+{% endblock contenido %}

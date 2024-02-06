@@ -1,0 +1,45 @@
+{% extends 'control/baseControl.html' %}
+{% load static %}
+{% block contenido %}
+<div class="col-12 col-md-10 m-auto my-3"> 
+    <div class="card">
+        <div class="card-header bg-dark text-white">
+            <h5>Buscar usuario:</h5>
+        </div>
+        <div class="card-body m-auto my-3">
+            <form id="form_buscar" action="{% url 'control:control' %}" method="POST" style="max-width: 300px;">
+                {% csrf_token%}
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="floatingUsuario" required name="usuario" placeholder="nombre de usuario">
+                    <label for="floatingUsuario">nombre de usuario</label>
+                </div>                
+                <button id="boton_buscar" type="submit" class="form-control btn btn-info">
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="spinner_buscar" style='display: none;'></span>
+                    Buscar
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% if usuarios or nulo %}
+<div class="col-12 col-md-10 m-auto my-3">
+    <div class="card">
+        <div class="card-header bg-dark text-white">
+            <h5>Resultados:</h5>
+        </div>
+        <div class="card-body m-auto my-3">
+            {% if nulo %}
+            <p>{{ nulo }}</p>
+            {% endif %}
+            <ul class="usuarios-list">
+                {% for usuario in usuarios %}
+                <li>
+                    <a class="text-dark" href="{% url 'control:detalles' usuario.id %}">{{ usuario.username }}, tiene {{ usuario.profile.coins }} coins.</a>                
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock contenido %}

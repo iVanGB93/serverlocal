@@ -1,0 +1,170 @@
+{% extends "forum/baseForum.html" %}
+{% load static %}
+
+{% block contenido %}
+<section class="primera" id="hero">
+    <div class="container-xl">
+        <div class="row gy-4">
+            <div class="col-lg-8">
+                <div class="post featured-post-lg">
+                    <div class="details clearfix">
+                        <a href="{% url 'forum:index' publicacion.tema %}" class="category-badge">{{ publicacion.tema }}</a>
+                        <h2 class="post-title">
+                            <a href="{{ publicacion.slug }}">{{ publicacion.titulo }}</a>
+                        </h2>
+                        <ul class="meta list-inline mb-0">
+                            <li class="list-inline-item">
+                                <a href="{{ publicacion.slug }}">{{ publicacion.autor }}</a>
+                            </li>
+                            <li class="list-inline-item">{{ publicacion.fecha }}</li>
+                        </ul>
+                    </div>
+                    <a href="{{ publicacion.slug }}">
+                        <div class="thumb rounded">
+                            <img class="inner" src="{{ publicacion.imagen1.url }}" alt="">
+                        </div>
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="post-tabs rounded bordered">
+                    <ul class="nav nav-tabs nav-pills nav-fill" id="postTab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button aria-controls="popular" aria-selected="true" class="nav-link active" data-bs-target="#popular"
+                                data-bs-toggle="tab" id="popular-tab" role="tab" type="button">
+                                Popular
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button aria-controls="recent" aria-selected="false" class="nav-link" data-bs-target="#recent"
+                                data-bs-toggle="tab" id="recent-tab" role="tab" type="button">
+                                Recientes
+                            </button>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="postsTabContent">
+                        <div class="lds-dual-ring"></div>
+                        <div class="tab-pane fade show active" id="popular" aria-labelledby="popular-tab" role="tabpanel">
+                            {% if populares %}
+                            {% for p in populares %}
+                            <div class="post post-list-sm circle">
+                                <div class="thumb circle">
+                                    <a href="{{ p.slug }}">
+                                        <div class="inner">
+                                            <img src="{{ p.imagen1.url }}" alt="">
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="details clearfix">
+                                    <h6 class="post-title my-0">
+                                        <a href="{{ p.slug }}">{{ p.titulo }}</a>
+                                    </h6>
+                                    <ul class="meta list-inline mt-1 mb-0">
+                                        <li class="list-inline-item">{{ p.fecha|date:"d/m/Y-H:m" }}</li>
+                                        <li class="list-inline-item fw-bold text-dark">{{ p.visitas }} vistas</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            {% else %}
+                            <li class="list-item py-1 text-white">Nada publicado aún</li>
+                            {% endif %}
+                        </div>
+
+                        <div class="tab-pane fade" id="recent" aria-labelledby="recent-tab" role="tabpanel">
+                            {% if populares %}
+                            {% for p in recientes %}                            
+                            <div class="post post-list-sm circle">
+                                <div class="thumb circle">
+                                    <a href="{{ p.slug }}">
+                                        <div class="inner">
+                                            <img src="{{ p.imagen1.url }}" alt="">
+                                        </div>
+                                    </a>
+                                </div>
+                                <div class="details clearfix">
+                                    <h6 class="post-title my-0">
+                                        <a href="{{ p.slug }}">{{ p.titulo }}</a>
+                                    </h6>
+                                    <ul class="meta list-inline mt-1 mb-0">
+                                        <li class="list-inline-item">{{ p.fecha|date:"d/m/Y-H:m" }}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            {% else %}
+                            <li class="list-item py-1 text-white">Nada publicado aún</li>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row my-4 h4">
+            <hr class="dropdown-divider" />
+            <div class="col-12 temas d-flex justify-content-between ">
+                <a id="Noticia" href="{% url 'forum:index' 'Noticia' %}">Noticias</a>
+                <a id="Internet" href="{% url 'forum:index' 'Internet' %}">Internet</a>
+                <a id="JovenClub" href="{% url 'forum:index' 'JovenClub' %}">Joven Club</a>
+                <a id="Emby" href="{% url 'forum:index' 'Emby' %}">Emby</a>
+                <a id="Filezilla" href="{% url 'forum:index' 'Filezilla' %}">FileZilla</a>
+                <a id="QbaRed" href="{% url 'forum:index' 'QbaRed' %}">QbaRed</a>
+            </div>
+            <hr class="dropdown-divider" />
+        </div>
+    </div>
+</section>
+<section class="main-content">
+    <div class="container-xl">
+        <div class="section-header d-flex justify-content-between">
+            <h3 class="section-title">Sobre {{ tema }}</h3>
+            <a style="align-self: center;" href="{% url 'forum:crear' tema %}">
+                <button class="boton">Crear nuevo</button>
+            </a>
+        </div>
+        <div class="padding-30 rounded bordered">
+            <div class="row">
+                <div class="col-md-12 col-sm-6">
+                    {% if not publicaciones %}
+                    <h3 class="text-center m-4"><i class="far fa-frown"></i> No hay ninguna publicación de este tema <i class="far fa-frown"></i></h3>
+                    {% endif %}
+                    {% for p in publicaciones %}
+                    <hr class="dropdown-divider my-1 mx-auto" style="width: 80%;" />
+                    <div class="post post-list clearfix" data-aos="fade-down">
+                        <div class="thumb rounded">                            
+                            <a href="{{ p.slug }}">
+                                <div class="inner">
+                                    <img src="{{ p.imagen1.url }}" alt="">
+                                </div>
+                            </a>
+                        </div>
+                        <div class="details">
+                            <ul class="meta list-inline mb-3">
+                                <li class="list-inline-item">
+                                    <a href="{{ p.slug }}">
+                                        <img class="autor" src="{{ p.autor.profile.imagen.url }}" alt="">
+                                        {{ p.autor }}
+                                    </a>
+                                </li>
+                                <li class="list-inline-item">
+                                    {{ p.fecha }}
+                                </li>
+                            </ul>
+                            <h5 class="post-title">
+                                <a href="{{ p.slug }}">{{ p.titulo }}</a>
+                            </h5>
+                            <p class="contenido">{{ p.contenido }}</p>
+                            <a href="{{ p.slug }}">seguir leyendo...</a>
+                        </div>
+                    </div>
+                    <hr class="dropdown-divider mt-0 mx-auto" style="width: 80%;" />
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{ tema|json_script:"tema" }}
+
+{% endblock  %}

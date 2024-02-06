@@ -1,0 +1,112 @@
+{% extends "web/baseWeb.html" %}
+{% load static %}
+{% block contenido %}
+<section class="home" id="home">
+    <div class="box" style="background: url({% static 'web/images/home.jpg' %});">
+        <div class="content">
+            <h3 data-aos="fade-down">Bienvenido{% if user.is_authenticated %} {{user.username}}{% endif %} a QbaRed</h3>
+            <p data-aos="fade-down">Comunidad inalámbrica de Centro Habana</p>
+            <div class="button" data-aos="fade-up">
+                {% if user.is_authenticated %}
+                <a href="{% url 'users:logout' %}" class="boton">Salir</a>
+                <button style="display: none;" id="login-btn" class="boton">Entrar</button>
+                <button style="display: none;" id="register-btn" class="boton">Registrarme</button>
+                {% else %}
+                <button id="login-btn" class="boton">Entrar</button>
+                <button id="register-btn" class="boton">Registrarme</button>
+                {% endif %}
+            </div>            
+        </div>
+    </div>
+</section>
+
+<section class="servicios" id="servicios">
+    <h1 class="heading">Nuestros <span>Servicios</span> </h1>
+    <div class="box-container">
+        <div class="box" data-aos="fade-right">
+            <div class="image">
+                <img src="{% static 'web/images/servicio_ts.jpg' %}" alt="">
+            </div>
+            <div class="content">
+                <h3>TeamSpeak</h3>
+                <p>Es un software chat de voz sobre IP, permite a los usuarios hablar en un canal de chat con otros usuarios.</p>
+                <a href="{% url 'web:ts' %}" class="boton">Detalles</a>                
+            </div>
+        </div>
+        <div class="box" data-aos="fade-down">
+            <div class="image">
+                <img src="{% static 'web/images/servicio_ftp.jpg' %}" alt="">
+            </div>
+            <div class="content">
+                <h3>FileZilla</h3>
+                <p>Es un software de transferencia de archivos sobre el protocolo ftp, permite a los usuarios la descarga de ficheros desde el servidor.</p>
+                <a href="{% url 'web:ftp' %}" class="boton">Detalles</a>                
+            </div>
+        </div>
+        <div class="box" data-aos="fade-left">
+            <div class="image">
+                <img src="{% static 'web/images/servicio_emby.jpg' %}" alt="">
+            </div>
+            <div class="content">
+                <h3>Emby</h3>
+                <p>Es un servidor multimedia desde el cual puedes visualizar contenido en tus dispositivos mediante stream directo.</p>
+                <a href="{% url 'web:emby' %}" class="boton">Detalles</a>                
+            </div>
+        </div>
+        <div class="box" data-aos="fade-left">
+            <div class="image">
+                <img src="{% static 'web/images/servicio_jc.jpg' %}" alt="">
+            </div>
+            <div class="content">
+                <h3>Joven Club</h3>
+                <p>Accede a la red de joven club, en línea con toda Cuba. Debes tener una cuenta con saldo. Para mas información escribir al <a class="chat" href="{% url 'chat:room' 'iVan' %}">iVan</a>.</p>
+                <a href="{% url 'web:jc' %}" class="boton">Detalles</a>                
+            </div>
+        </div>
+        <div class="box" data-aos="fade-left">
+            <div class="image">
+                <img src="{% static 'web/images/servicio_axie.jpg' %}" alt="">
+            </div>
+            <div class="content">
+                <h3>Axie-Infinity</h3>
+                <p>Mejor NFT-Game del mercado, aqui se ven las becas de QbaRed y más...</p>
+                <a href="{% url 'web:axie' %}" class="boton">Detalles</a>                
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="about" id="about">
+    <div class="box">
+        <div class="image" data-aos="fade-left">
+            <img src="{% static 'web/images/equipo.jpg' %}" alt="">
+        </div>
+        <div class="content" data-aos="fade-right">
+            <h3>¿QbaRed?</h3>
+            <p>
+                Desde septiembre de 2019 en nuestro país se permitió la creación de redes privadas para compartir
+                en una comunidad digital, o navegar por el inmenso mundo del internet desde la comodidad de su casa, según las resoluciones 98 y 99 del Ministerio de las Comunicaciones(Mincom) para la organización y legalización de comunidades interconectadas inalámbricamente o cableadas. 
+                Nosotros bajo la licencia No: SC-627-00003858-19 constituimos la nuestra, con el objetivo de compartir información, mensajes de texto y voz, y muy importante jugar DOTA2, y otros juegos.
+            </p>
+        </div>        
+    </div>
+    <div class="box">        
+        <div class="content" data-aos="fade-left">
+            <h3>¿Donde estamos?</h3>
+            <p>Nos encontramos en los consejos populares Colón y San Leopoldo, del municipio Centro Habana. El área sombreada en el mapa representa aproximadamente nuestro alcance. Si no eres parte de esta red y vives cerca puedes unirte, todos son bienvenidos.</p>
+        </div>    
+        <div class="image" data-aos="fade-right">
+            <img src="{% static 'web/images/ubicacion.jpg' %}" alt="">
+        </div>    
+    </div>
+    <div class="box">        
+        <div class="content" data-aos="fade-left">
+            <h3>Importante</h3>
+            <p>En la red no se permite ningún tipo de propaganda sobre política, religión o sexo. Esta creada para el disfrute y entretenimiento de todos, asi como todos aportan a la estructuración de la misma. No tiene fines comerciales, ni de lucro personal.</p>
+        </div>
+    </div>
+</section>
+<div class="loader-container">
+    <i class="fab fa-quinscape"></i>
+</div>
+{% endblock %}

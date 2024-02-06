@@ -1,0 +1,56 @@
+{% extends "web/baseWeb.html" %}
+{% load static %}
+{% block title %} - Emby{% endblock %}
+{% block contenido %}
+<section class="descripcion">
+    <div class="row">
+        <div class="col-md-4 order-md-1 p-4 text-center" data-aos="fade-right">
+            <img src="{% static 'web/images/emby_imagen1.png' %}" class="img-fluid" alt="Responsive image" style="height: 200px;"> 
+        </div>
+        <div class="col-md-8 order-md-2 d-flex" data-aos="fade-left">
+            <p class="text-white fs-4">
+            Emby es un servidor multimedia desde el cual puedes visualizar contenido en tus dispositivos mediante stream directo.
+            Animados, animes, películas, series y todo el paquete semanal.
+            </p>
+        </div>
+    </div>    
+</section>
+<section class="descargas">
+    <div class="row">
+        <div class="col-md-7 fs-4" data-aos="fade-right">
+            <h2>Puede abrir al emby desde el siguiente botón:</h2> 
+            <div class="d-flex justify-content-between mt-4">
+                {% if local %}
+                <a href="http://172.16.0.10:8096">
+                {% else %}
+                <a href="http://143.198.184.119:8096">
+                {% endif %}
+                    <button class="boton">Emby</button>
+                </a>
+            </div>                 
+        </div>
+        <div class="col-md-5 text-center p-4" data-aos="fade-left">
+            <img src="{% static 'web/images/servicio_emby.jpg' %}" class="img-fluid" alt="Responsive image"> 
+        </div>    
+    </div>
+    <hr class="featurette-divider">
+    <div class="row">
+        <div class="col-8 m-auto d-flex justify-content-between mt-4 fs-4">
+            <h2 data-aos="fade-right">Puede crear su cuenta en el Portal del Usuario:</h2> 
+            <a href="{% url 'portal:emby' %}" data-aos="fade-left">
+                <button class="boton">Portal</button>
+            </a>        
+        </div>
+    </div>
+</section>
+<section class="explicacion">        
+    <hr class="featurette-divider">
+    <div class="row text-white">
+      <div class="col-md-8">
+        <h4 >Ayuda!!!</h4>
+        <p class="lead">Pronto un video sobre como instalar y conectarse.</p>
+      </div>      
+    </div>
+    <hr class="featurette-divider">
+</section>
+{% endblock contenido %}

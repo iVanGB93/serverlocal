@@ -1,0 +1,33 @@
+{% extends 'control/baseControl.html' %}
+{% load static %}
+{% block contenido %}
+<div class="col-12 col-md-10 m-auto my-3" style="height: 90%;">   
+    <div class="card align-middle">
+        <div class="card-header bg-dark text-white">
+            <h5>Desea eliminar el usuario de la local o crearlo en internet?</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">        
+                <h5 class="col-12 text-center my-3">La acción es permanente asegurece bien.</h5>
+            </div>
+            <div class="row">
+                <div class="col-3 m-auto">
+                    <form action="{% url 'control:crear_eliminar_usuario' id %}" method="POST">
+                        {% csrf_token%}
+                        <button class="form-control btn btn-success" name="respuesta" value="crear" type="submit">Crear</button>
+                    </form>
+                </div>
+                <div class="col-3 m-auto">
+                    <form action="{% url 'control:crear_eliminar_usuario' id %}" method="POST">
+                        {% csrf_token%}
+                        <button class="form-control btn btn-danger" name="respuesta" value="eliminar" type="submit">Eliminar</button>
+                    </form>
+                </div>
+                <div class="col-3 m-auto">
+                    <a href="{% url 'control:control_usuarios' %}"><button class="form-control btn btn-info">Cancelar</button></a>
+                </div>
+            </div> 
+        </div>
+    </div>
+</div>
+{% endblock contenido %}

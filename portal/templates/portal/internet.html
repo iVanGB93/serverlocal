@@ -1,0 +1,353 @@
+{% extends "portal/basePortal.html" %}
+{% load static %}
+{% block contenido %}   
+<div class="row m-2 p-1">    
+    <div class="col-10 col-md-3 mt-0 mb-4 m-auto caja" style="max-width: 300px; background: #fff;">  
+        <div class="cardHeader titulo my-auto">
+            <h3 class="titulo m-1 p-1"><i class="fab fa-internet-explorer text-primary"></i> INTERNET - {{ user }}</h3>            
+        </div>   
+        <hr class="dropdown-divider" />
+        <div class="d-flex justify-content-between">
+            <h6 class="titulo my-auto">Mi cuenta:</h6>
+            <h6 class="texto my-auto">
+                {% if user.estadoservicio.internet %}
+                <i class="fas fa-check-square text-success"></i>
+                {% else %}
+                <i class="fas fa-power-off text-danger"></i>
+                {% endif %}
+            </h6>
+        </div>
+        <hr class="dropdown-divider" />
+        <div class="d-flex justify-content-between">
+            <h6 class="titulo my-auto">Sincronización:</h6>
+            <h6 class="texto my-auto">
+                <form id="myform_sync" action="{% url 'portal:sync_servicio' 'internet' %}" method="POST">
+                    {% csrf_token %}
+                    {% if user.estadoservicio.sync %}
+                    <button id="boton_sync" type="submit" class="btn btn-outline-success">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="spinner_sync" style='display: none'></span>
+                        <span><i class="fas fa-check-square text-success"></i></span> Check
+                    </button>
+                    {% else %}
+                    <button id="boton_sync" type="submit" class="btn btn-outline-danger">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="spinner_sync" style='display: none'></span>
+                        <span><i class="fas fa-power-off text-danger"></i></span> Sincronizar
+                    </button>
+                    {% endif %}
+                </form>
+            </h6>
+        </div>    
+        {% if user.estadoservicio.internet %}
+        <hr class="dropdown-divider" />
+        <div class="d-flex justify-content-between">
+            <h6 class="titulo my-auto">Restante:</h6>
+            <h6 class="texto my-auto">
+                {% if user.estadoservicio.int_time %}
+                    <p class="my-auto" id="tiempo_restante"></p>
+                {% else %}
+                    {% if user.estadoservicio.int_tipo == "internetHoras" %}
+                        <a href="https://login.qbared.com/status/">Horas compradas: {{ user.estadoservicio.int_horas }}</a> 
+                    {% else %}
+                        <p> - </p>
+                    {% endif %}
+                {% endif %}
+            </h6>
+        </div>  
+        {% endif %}
+        <hr class="dropdown-divider" /> 
+        <div class="d-flex justify-content-between mb-2">
+            <h6 class="titulo my-auto">Autopago:</h6>
+            <h6 class="texto my-auto">
+                <form id="myform_auto" action="{% url 'portal:auto' 'internet' %}" method="POST">
+                    {% csrf_token %}
+                    {% if user.estadoservicio.int_auto %}
+                    <button id="boton_auto" type="submit" class="btn btn-outline-success">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="spinner_auto" style='display: none'></span>
+                        <span><i class="fas fa-check-square text-success"></i></span> Activo
+                    </button>
+                    {% else %}
+                    <button id="boton_auto" type="submit" class="btn btn-outline-danger">
+                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="spinner_auto" style='display: none'></span>
+                        <span><i class="fas fa-power-off text-danger"></i></span> OFF
+                    </button>
+                    {% endif %}
+                </form>
+            </h6>
+        </div>  
+        <hr class="dropdown-divider" />
+    </div>
+    <div class="col-10 col-md-3 mt-0 mb-4 m-auto text-center caja" style="max-width: 300px; background: #fff;">
+        <div class="cardHeader titulo my-auto">
+            <h3 class="titulo m-1 p-1">Tipo</h3>            
+        </div>
+        <hr class="dropdown-divider" />        
+        <div class="d-flex justify-content-between">
+            <h6 class="titulo my-auto">Semanal:</h6>
+            <h6 class="texto my-auto">{{ internetSemanalPrice }} coins</h6>
+        </div>
+        <hr class="dropdown-divider" />
+        <div class="d-flex justify-content-between">
+            <h6 class="titulo my-auto">Por horas:</h6>
+            <h6 class="texto my-auto">{{ internetHorasPrice }} coins X hora</h6>
+        </div>                      
+        <hr class="dropdown-divider" />
+        <h6 class="text-center titulo my-auto">*costos a 1mb</h6>
+        <hr class="dropdown-divider" />
+    </div>
+    <div class="col-10 col-md-3 mt-0 mb-4 m-auto text-center caja" style="max-width: 300px; background: #fff;">
+        <div class="cardHeader titulo my-auto">
+            <h3 class="titulo m-1 p-1">Duración</h3>            
+        </div>    
+        <hr class="dropdown-divider" />
+        <h6 class="text-center titulo my-auto">Horas</h6>
+        <hr class="dropdown-divider" />
+        <h6 class="text-center titulo my-auto">Semanal</h6>
+        <hr class="dropdown-divider" />
+        <h6 class="text-center titulo my-auto">Mensual</h6>
+        <hr class="dropdown-divider" />
+    </div>        
+    <div class="col-10 col-md-3 mt-0 mb-4 m-auto text-center caja" style="max-width: 300px; background: #fff;">
+        <div class="cardHeader titulo my-auto">
+            <h3 class="titulo m-1 p-1">Velocidad</h3>           
+        </div>    
+        <hr class="dropdown-divider" />
+        <h6 class="text-center titulo my-auto">1mb</h6>
+        <hr class="dropdown-divider" />
+        <h6 class="text-center titulo my-auto">2mb</h6>
+        <hr class="dropdown-divider" />
+        <h6 class="text-center titulo my-auto">3mb</h6>
+        <hr class="dropdown-divider" />
+        <h6 class="text-center titulo my-auto">4mb</h6>
+        <hr class="dropdown-divider" />
+    </div>
+</div>
+<div class="row my-3">
+    <div class="col-10 m-auto text-center caja" style="max-width: 300px; background: #fff;"> 
+        {% if user.estadoservicio.internet %}
+        <div class="cardHeader titulo">
+            <h3 class="titulo m-1 p-1">Ya tiene activo este servicio <i class="fas fa-thumbs-up"></i></h3>   
+        </div>
+        <p class="texto">{{ user.estadoservicio.int_tipo }} a {{ user.estadoservicio.int_velocidad }}</p>         
+        <form class="p-2 texto d-none" id="myform" action="{% url 'portal:internet' %}" method="post">
+        {% else %}
+        <div class="cardHeader titulo">
+            <h3 class="titulo m-1 p-1">Activar el servicio Internet:</h3>            
+        </div>        
+        <hr class="dropdown-divider" />
+        <form class="p-2 texto" id="myform" action="{% url 'portal:internet' %}" method="post">
+        {% endif %}
+            {% csrf_token %}
+            <h4 class="texto" id="costo">¿Qué tipo de internet?</h4>
+            <select class="form-select mb-3" name="tipo">
+                <option selected>Seleccione el tipo</option>
+                <option value="24h">24 horas</option>
+                <option value="horas">Horas</option>
+            </select>
+            <select id="duracion_form" class="form-select mb-3" name="duracion">
+                <option selected>Seleccione la duración</option>
+                <option value="semanal">Semanal</option>
+                <option value="mensual">Mensual</option>
+            </select>
+            <select class="form-select mb-3" name="velocidad">
+                <option selected>Seleccione la velocidad</option>
+                <option value="1mb">1mb</option>
+                <option value="2mb">2mb</option>
+                <option value="3mb">3mb</option>
+                <option value="4mb">4mb</option>
+            </select>
+            <div id="horas_form" class="input-group mb-3" style="display: none;">
+                <span class="col-auto input-group-text" id="inputGroup-sizing-default">Horas:</span>
+                <input type="number" name="cantidad_horas" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+            </div>
+            <div class="input-group mb-3">
+                <span class="col-auto input-group-text" id="inputGroup-sizing-default">Contraseña:</span>
+                <input type="password" name="contra" required class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+            </div>
+            <button onclick="confirmSubmit(event);" id="boton" type="submit" class="form-control btn btn-outline-primary">
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="spinner" style='display: none'></span>
+                Activar
+            </button>            
+        </form>
+    </div>
+</div>
+<div class="row py-5">
+    <div class="col-10 col-md-10 m-auto text-center caja" style="background: #fff;">
+        <div class="cardHeader titulo">
+            <h3 class="titulo m-1 p-1">Información:</h3>            
+        </div>
+        <div class="p-2 texto">
+            <ul class="list-group text-start">
+                <li class="list-group-item">Si escoge la duración mensual sería el costo de 4 semanas y tendría 30 días, 2 extras.</li>
+                <li class="list-group-item">El tipo por horas es conexión a internet cuando usted desee usar el tiempo que tenga disponible.</li>
+                <li class="list-group-item">Si desea una velocidad mayor a las que se ofrecen no dude en preguntar.</li>
+                <li class="list-group-item">No olvide si activa el servicio tiene la oportunidad de ganar el sorteo del mes usando el código, más información <a href="{% url 'sorteo:index' %}">-->aquí<--</a>.</li>
+                <li class="list-group-item">Duda y sugerencias, escribir a la administración.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{{ internetSemanalPrice|json_script:"internetSemanalPrice" }}
+{{ internetHorasPrice|json_script:"internetHorasPrice" }}
+{% if user.estadoservicio.internet and user.estadoservicio.int_tipo != 'internetHoras' %}
+{{ user.estadoservicio.int_time|json_script:"fecha" }}
+<script>
+    var fecha = JSON.parse(document.getElementById('fecha').textContent);
+    var countDownDate = new Date(fecha).getTime();
+    var x = setInterval(function() {
+    var now = new Date().getTime();
+    var distance = countDownDate - now;
+    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+    document.getElementById("tiempo_restante").innerHTML = days + "d--" + hours + "h " + minutes + "m " + seconds + "s";
+    if (distance < 0) {
+        clearInterval(x);
+        document.getElementById("tiempo_restante").innerHTML = "Terminado";
+    }
+    }, 1000);
+</script>
+{% endif %}
+<script> 
+    const myform_sync = document.getElementById("myform_sync");
+    myform_sync.addEventListener("submit", (e) => {       
+        document.getElementById('spinner_sync').style.display = 'inline-block';
+        document.getElementById('boton_sync').disabled=true;
+        document.getElementById('boton_auto').disabled=true;
+        document.getElementById('boton').disabled=true;
+    });
+    const myform_auto = document.getElementById("myform_auto");
+    myform_auto.addEventListener("submit", (e) => {       
+        document.getElementById('spinner_auto').style.display = 'inline-block';
+        document.getElementById('boton_sync').disabled=true;
+        document.getElementById('boton_auto').disabled=true;
+        document.getElementById('boton').disabled=true;
+    });
+    const myform = document.getElementById("myform");
+    var costo = "";
+    myform.addEventListener("submit", (e) => {       
+        document.getElementById('spinner').style.display = 'inline-block';
+        document.getElementById('boton').disabled=true;
+        document.getElementById('boton_sync').disabled=true;
+        document.getElementById('boton_auto').disabled=true;
+    });
+    const internetSemanalPrice = JSON.parse(document.getElementById('internetSemanalPrice').textContent);
+    const internetHorasPrice = JSON.parse(document.getElementById('internetHorasPrice').textContent);
+    function saberCosto() {
+        var texto = "¿Qué tipo de internet?";
+        document.querySelector('#duracion_form').style.display = 'flex';
+        document.querySelector('#horas_form').style.display = 'none';
+        if (myform.tipo.value === '24h') {
+            texto = "¿Qué duración?";
+            if (myform.duracion.value === 'semanal') {
+                texto = "¿Qué velocidad?";
+                if (myform.velocidad.value === '1mb') {
+                    costo = internetSemanalPrice;
+                } else if (myform.velocidad.value === '2mb') {
+                    costo = internetSemanalPrice * 2;
+                } else if (myform.velocidad.value === '3mb') {
+                    costo = internetSemanalPrice * 3;
+                } else if (myform.velocidad.value === '4mb') {
+                    costo = internetSemanalPrice * 4;
+                };
+            } else if (myform.duracion.value === 'mensual') {
+                texto = "¿Qué velocidad?";
+                if (myform.velocidad.value === '1mb') {
+                    costo = internetSemanalPrice * 4;
+                } else if (myform.velocidad.value === '2mb') {
+                    costo = internetSemanalPrice * 4 * 2;
+                } else if (myform.velocidad.value === '3mb') {
+                    costo = internetSemanalPrice * 4 * 3;
+                } else if (myform.velocidad.value === '4mb') {
+                    costo =internetSemanalPrice * 4 * 4;
+                };
+            }
+        } else if (myform.tipo.value === 'horas') {
+            document.querySelector('#duracion_form').style.display = 'none';
+            document.querySelector('#horas_form').style.display = 'flex';
+            texto = "¿Qué velocidad?";
+            if (myform.velocidad.value === '1mb') {
+                    costo = myform.cantidad_horas.value * internetHorasPrice;
+                } else if (myform.velocidad.value === '2mb') {
+                    costo = myform.cantidad_horas.value * internetHorasPrice * 2;
+                } else if (myform.velocidad.value === '3mb') {
+                    costo = myform.cantidad_horas.value * internetHorasPrice * 3;
+                } else if (myform.velocidad.value === '4mb') {
+                    costo = myform.cantidad_horas.value * internetHorasPrice * 4;
+                };
+        };
+        if (costo != "") {
+            texto = "Costo: " + costo + " coins"
+        }
+        document.querySelector('#costo').innerHTML = texto;
+    }
+    myform.addEventListener("input", function () {
+        saberCosto();
+    });
+    function confirmSubmit(e) {
+        if (myform.contra.value != "") {
+            console.log(costo);
+            e.preventDefault();            
+            if (myform.tipo.value === 'Seleccione el tipo') {
+                Swal.fire({
+                    title: "¡Seleccione un tipo!",
+                    icon: 'warning',
+                    confirmButtonColor: '#d33',
+                })
+            } else if (myform.duracion.value === 'Seleccione la duración' && myform.tipo.value != 'horas') {
+                Swal.fire({
+                    title: "¡Seleccione la duración!",
+                    icon: 'warning',
+                    confirmButtonColor: '#d33',
+                })
+            }  else if (myform.velocidad.value === 'Seleccione la velocidad') {
+                Swal.fire({
+                    title: "¡Seleccione la velocidad!",
+                    icon: 'warning',
+                    confirmButtonColor: '#d33',
+                })
+            } else if (myform.tipo.value === 'horas' && myform.cantidad_horas.value === '') {
+                Swal.fire({
+                    title: "¡Defina la cantidad de horas!",
+                    icon: 'warning',
+                    confirmButtonColor: '#d33',
+                })
+            } else if (myform.tipo.value === 'horas' && myform.cantidad_horas.value < 5) {
+                Swal.fire({
+                    title: "¡La cantidad mínima es 5 horas!",
+                    icon: 'warning',
+                    confirmButtonColor: '#d33',
+                })
+            } else {
+                if (myform.tipo.value === 'horas') {
+                    texto = costo + " coins por " + myform.cantidad_horas.value + " horas a " + myform.velocidad.value + "."
+                } else if (myform.tipo.value === '24h') {
+                    if (myform.duracion.value === 'semanal') {
+                        texto = costo + " coins por una semana con 24 horas de conexión a " + myform.velocidad.value + "."
+                    } else {
+                        texto = costo + " coins por 30 días con 24 horas de conexión a " + myform.velocidad.value + "."
+                    }
+                }
+                Swal.fire({
+                    title: '¡Confirme su pago!',
+                    text: "¿Seguro que desea pagar " + texto,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#007000',
+                    cancelButtonColor: '#d33',
+                    cancelButtonText: 'Cancelar',
+                    confirmButtonText: 'Confirmar'
+                    }).then((result) => {
+                    if (result.isConfirmed) {
+                        myform.submit();
+                        document.getElementById('spinner').style.display = 'inline-block';
+                        document.getElementById('boton').disabled=true;
+                        document.getElementById('boton_sync').disabled=true;
+                        document.getElementById('boton_auto').disabled=true;
+                    }
+                }); 
+            }
+        }
+    }
+</script>
+{% endblock contenido %}

@@ -1,0 +1,56 @@
+{% extends "portal/basePortal.html" %}
+{% load static %}
+{% block contenido %}   
+<div class="col-10 col-md-6 m-auto p-2 my-5 caja" style="max-width: 450px; background: #fff;">                
+    <div class="cardHeader titulo">
+        <h3 class="titulo m-3 p-3">Editar Perfil:</h3>            
+    </div>            
+    <hr class="dropdown-divider" />
+    <div class="card-body text-center">
+        <form class="p-2" id="myform" action="{% url 'portal:perfil' %}"  method="post">            
+            {% csrf_token %}
+            <div class="form-floating mb-3">
+                <input type="email" class="form-control" id="floatingEmail" required name="email" value="{{ user.email }}" placeholder="mi correo nuevo...">
+                <label for="floatingEmail">Correo nuevo:</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="floatingName" required name="first_name" value="{{ user.first_name}}"  placeholder="su nombre...">
+                <label for="floatingName">Su nombre:</label>
+            </div>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="floatingLastName" required name="last_name" value="{{ user.last_name}}" placeholder="sus apellidos...">
+                <label for="floatingLastName">Sus apellidos:</label>
+            </div>
+            <button id="boton" class="btn btn-outline-primary my-3" type="submit">
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="spinner" style='display: none;'></span>
+                Cambiar
+            </button>
+        </form>      
+        <form class="p-2 mt-2" id="fotoform" action="{% url 'portal:perfil' %}"  method="post" enctype="multipart/form-data">                    
+            {% csrf_token %}
+            <label for="imagen" class="form-label texto">Seleccione la imagen que desee:</label>
+            <div class="input-group mb-3">
+                <input type="file" class="form-control" id="imagen" name="imagen">
+            </div>
+            <button id="botonFoto" class="btn btn-outline-primary my-3" type="submit">
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" id="spinnerFoto" style='display: none;'></span>
+                Guardar
+            </button>
+        </form>
+    </div>       
+</div>
+<script>
+    const myform = document.getElementById("myform");
+    myform.addEventListener("submit", (e) => {       
+        document.getElementById('spinner').style.display = 'inline-block';
+        document.getElementById('boton').disabled=true;
+        document.getElementById('botonFoto').disabled=true;
+    });
+    const fotoform = document.getElementById("fotoform");
+    fotoform.addEventListener("submit", (e) => {       
+        document.getElementById('spinnerFoto').style.display = 'inline-block';
+        document.getElementById('boton').disabled=true;
+        document.getElementById('botonFoto').disabled=true;
+    });
+</script>
+{% endblock contenido %}
