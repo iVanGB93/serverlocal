@@ -18,7 +18,6 @@ def get_or_create_conexion_status():
         conexion.ip_emby = config('IP_EMBY')
         conexion.ip_ftp = config('IP_FTP')
         conexion.save()
-    conexion = []
     return conexion
 
 def chequeo_conexion_online():

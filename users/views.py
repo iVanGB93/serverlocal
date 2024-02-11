@@ -44,12 +44,10 @@ def register(request):
         return redirect ('web:index')
     content = {'icon': 'error'}
     if request.method == 'POST':
-        online = config('APP_MODE')
-        if online == 'online':
-            conexion = EstadoConexion.objects.get(id=1)
-            if not conexion.online:
-                content['mensaje'] = "Registro deshabilitado, intente más tarde."
-                return render(request, 'users/register.html', content)
+        conexion = EstadoConexion.objects.get(servidor=config('NOMBRE_SERVIDOR'))
+        if not conexion.online:
+            content['mensaje'] = "Registro deshabilitado, intente más tarde."
+            return render(request, 'users/register.html', content)
         password = request.POST['password']
         if len(password) <8:
             content['mensaje'] = "Contraseña mínimo 8 caracteres."
@@ -66,23 +64,22 @@ def register(request):
         if User.objects.filter(email=email).exists():
             content['mensaje'] = "Correo en uso."
             return render(request, 'users/register.html', content)
-        if online == 'online':
-            check_user = actualizacion_remota('check_usuario', {'usuario': username})
-            if check_user['conexion']:
-                if check_user['estado']:
-                    content['mensaje'] = check_user['mensaje']
-                    return render(request, 'users/register.html', content)
-            else:
-                content['mensaje'] = "Registro deshabilitado, intente más tarde."
+        check_user = actualizacion_remota('check_usuario', {'usuario': username})
+        if check_user['conexion']:
+            if check_user['estado']:
+                content['mensaje'] = check_user['mensaje']
                 return render(request, 'users/register.html', content)
-            check_email = actualizacion_remota('check_email', {'email': email})
-            if check_email['conexion']:
-                if check_email['estado']:
-                    content['mensaje'] = check_email['mensaje']
-                    return render(request, 'users/register.html', content)
-            else:
-                content['mensaje'] = "Registro deshabilitado, intente más tarde."
+        else:
+            content['mensaje'] = "Registro deshabilitado, intente más tarde."
+            return render(request, 'users/register.html', content)
+        check_email = actualizacion_remota('check_email', {'email': email})
+        if check_email['conexion']:
+            if check_email['estado']:
+                content['mensaje'] = check_email['mensaje']
                 return render(request, 'users/register.html', content)
+        else:
+            content['mensaje'] = "Registro deshabilitado, intente más tarde."
+            return render(request, 'users/register.html', content)
         user = User(username=username, email=email)
         user.set_password(password)
         user.save()

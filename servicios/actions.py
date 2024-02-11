@@ -236,13 +236,11 @@ def comprar_internet(usuario, tipo, contra, duracion, horas, velocidad):
 
 def comprar_jc(usuario):
     result = {'correcto': False}
-    online = config('APP_MODE')
-    if online == 'online':
-        servidor = config('NOMBRE_SERVIDOR')
-        conexion = EstadoConexion.objects.get(servidor=servidor)
-        if not conexion.online:
-            result['mensaje'] = "Sistema sin conexión, intente más tarde."
-            return result
+    servidor = config('NOMBRE_SERVIDOR')
+    conexion = EstadoConexion.objects.get(servidor=servidor)
+    if not conexion.online:
+        result['mensaje'] = "Sistema sin conexión, intente más tarde."
+        return result
     usuario = User.objects.get(username=usuario)
     servicio = EstadoServicio.objects.get(usuario=usuario.id)
     if servicio.jc == True:
@@ -283,14 +281,12 @@ def comprar_jc(usuario):
 
 def comprar_emby(usuario):
     result = {'correcto': False}
-    online = config('APP_MODE')
     embyPrice = int(config('EMBY_PRICE'))
-    if online == 'online':
-        servidor = config('NOMBRE_SERVIDOR')
-        conexion = EstadoConexion.objects.get(servidor=servidor)
-        if not conexion.online:
-            result['mensaje'] = "Sistema sin conexión, intente más tarde."
-            return result
+    servidor = config('NOMBRE_SERVIDOR')
+    conexion = EstadoConexion.objects.get(servidor=servidor)
+    if not conexion.online:
+        result['mensaje'] = "Sistema sin conexión, intente más tarde."
+        return result
     usuario = User.objects.get(username=usuario)
     profile = Profile.objects.get(usuario=usuario)
     servicio = EstadoServicio.objects.get(usuario=usuario.id)
