@@ -174,6 +174,11 @@ OLD_PASSWORD_FIELD_ENABLED = True
 #crossheaders
 CORS_ALLOW_ALL_ORIGINS = True
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://qbared.com',
+]
+
+
 #configuracion de correo
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
