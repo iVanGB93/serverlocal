@@ -394,14 +394,12 @@ def comprar_emby(usuario):
 
 def comprar_filezilla(usuario, contraseña):
     result = {'correcto': False}
-    online = config('APP_MODE')
     ftpPrice = int(config('FTP_PRICE'))
-    if online == 'online':
-        servidor = config('NOMBRE_SERVIDOR')
-        conexion = EstadoConexion.objects.get(servidor=servidor)
-        if not conexion.online:
-            result['mensaje'] = "Sistema sin conexión, intente más tarde."
-            return result
+    servidor = config('NOMBRE_SERVIDOR')
+    conexion = EstadoConexion.objects.get(servidor=servidor)
+    if not conexion.online:
+        result['mensaje'] = "Sistema sin conexión, intente más tarde."
+        return result
     usuario = User.objects.get(username=usuario)
     profile = Profile.objects.get(usuario=usuario)
     servicio = EstadoServicio.objects.get(usuario=usuario)

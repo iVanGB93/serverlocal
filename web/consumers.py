@@ -34,7 +34,6 @@ class WSConsumer(WebsocketConsumer):
         return result
     
     def notificacion_to_json(self, notificacion):
-        result = []
         return {
             'id': notificacion.id,
             'usuario': notificacion.usuario.username,
@@ -44,7 +43,6 @@ class WSConsumer(WebsocketConsumer):
             'contenido': notificacion.contenido,
             'sync': notificacion.sync
         }
-        return result
     
     def notificaciones(self, data):
         respuesta = {'estado': False}
